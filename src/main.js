@@ -21,8 +21,9 @@ const axiosInstance = axios.create({
   },
 });
 
-createApp(App)
-  .use(store)
-  .use(router)
-  .use(createBootstrap({ components: true, directives: true }))
-  .mount("#app");
+const app = createApp(App);
+app.config.globalProperties.$axios = axiosInstance;
+app.use(store)
+app.use(router)
+app.use(createBootstrap({ components: true, directives: true }))
+app.mount("#app");
