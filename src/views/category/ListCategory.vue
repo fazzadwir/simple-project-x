@@ -7,7 +7,6 @@
       <li v-for="category in categories" :key="category.id">
         {{ category.name }}
         <button @click="editCategory(category.id)">Edit</button>
-        <button @click="deleteCategory(category.id)">Delete</button>
       </li>
     </ol>
   </div>
@@ -47,14 +46,6 @@ export default {
     editCategory(id) {
       this.$router.push({
         name: 'editCategory',
-        params: {
-          id: id
-        }
-      });
-    },
-    deleteCategory(id) {
-      this.$router.push({
-        name: 'deleteCategory',
         params: {
           id: id
         }
