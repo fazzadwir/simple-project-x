@@ -1,9 +1,11 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import LoginView from '@/views/login/Login.vue'
+import Register from '@/views/login/Register.vue'
 import ListProduct from '@/views/product/ListProduct.vue'
 import AddProduct from '@/views/product/AddProduct.vue'
 import EditProduct from '@/views/product/EditProduct.vue'
 import ListCategory from '@/views/category/ListCategory.vue'
+
 import store from '@/store'
 
 const routes = [
@@ -11,6 +13,14 @@ const routes = [
     path: '/',
     name: 'login',
     component: LoginView,
+    meta:{
+      guest: true
+    }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register,
     meta:{
       guest: true
     }

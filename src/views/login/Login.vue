@@ -8,6 +8,7 @@
         <input type="password" v-model="password" placeholder="Enter your password">
         <button class="white" @click="reset">Reset</button>
         <button class="blue">Login</button>
+        <router-link class="red" to="/register"><button>Daftar</button></router-link>
       </form>
     </div>
   </div>
