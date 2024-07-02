@@ -16,35 +16,21 @@
         <tr>
           <td colspan="4"></td>
         </tr>
-        <tr v-for="category in categories" :key="category.id">
-          <td>{{ category.id + 1 }}</td>
+        <tr v-for="(category, index) in categories" :key="category.id">
+          <td>{{ index + 1 }}</td>
           <td>{{ category.name }}</td>
           <td>
             <img
-              :src="
-                category.image || 'https://via.placeholder.com/100'
-                  ? category.image
-                  : 'no-image'
-              "
-              alt=""
+              :src="category.image || 'https://via.placeholder.com/100'"
+              alt="category"
               style="width: 100px"
             />
           </td>
           <td>
-            <div class="dropdown">
-              <button
-                class="btn btn-secondary dropdown-toggle"
-                type="button"
-                data-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Action Menu
-              </button>
-              <div class="dropdown-menu">
-                <button class="dropdown-item" type="button" @click="editCategory(category.id)">Edit</button>
-                <button class="dropdown-item" type="button" @click="deleteCategory(category.id)">Delete</button>
-              </div>
-            </div>
+            <b-dropdown id="dropdown-1" text="Action Menu" variant="secondary">
+              <b-dropdown-item @click="editCategory(category.id)">Edit</b-dropdown-item>
+              <b-dropdown-item @click="deleteCategory(category.id)">Delete</b-dropdown-item>
+            </b-dropdown>
           </td>
         </tr>
       </tbody>
@@ -74,7 +60,6 @@ export default {
             name: item.name,
             image: item.image || "https://via.placeholder.com/100",
           });
-          console.log("New_Data", this.categories);
         });
       });
     },
