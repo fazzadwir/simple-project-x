@@ -1,17 +1,25 @@
 <template>
-  <div>
-    <h1>Edit Category {{ id }}</h1>
-    <form @submit.prevent="editCategory">
-      <label for="name">Name:</label>
-      <input v-model="name" type="text" id="name" required />
-      <label for="image">Image URL:</label>
-      <input v-model="image" type="text" id="image" required />
-      <input type="file" id="file" @change="handleFileUpload" />
-
-      <button type="button" @click="cancelEdit">Cancel</button>
-      <button type="submit">Save</button>
-    </form>
-  </div>
+  <b-container>
+    <h1 class="text-center">Edit Category {{ id }}</h1>
+    <b-form @submit.prevent="editCategory">
+      <b-form-group label="Name:" label-for="name">
+        <b-form-input v-model="name" id="name" required></b-form-input>
+      </b-form-group>
+      
+      <b-form-group label="Image URL:" label-for="image">
+        <b-form-input v-model="image" id="image" required></b-form-input>
+      </b-form-group>
+      
+      <b-form-group label="Upload Image:" label-for="file">
+        <b-form-file id="file" @change="handleFileUpload"></b-form-file>
+      </b-form-group>
+      
+      <b-button-group class="mt-3">
+        <b-button variant="secondary" @click="cancelEdit">Cancel</b-button>
+        <b-button type="submit" variant="primary">Save</b-button>
+      </b-button-group>
+    </b-form>
+  </b-container>
 </template>
 
 <script>
@@ -34,7 +42,6 @@ export default {
         .then((res) => {
           this.name = res.data.name;
           this.image = res.data.image;
-          console.log("Data_ID", res.data);
         })
         .catch((error) => {
           console.error("Error fetching category:", error);
@@ -57,7 +64,7 @@ export default {
           },
         })
         .then((response) => {
-          this.image = response.data.location; // Adjust this based on your server response
+          this.image = response.data.location;
           this.saveCategory();
         })
         .catch((error) => {
@@ -71,7 +78,6 @@ export default {
       this.$axios
         .put(`categories/${this.$route.params.id}`, { name: this.name, image: this.image })
         .then(() => {
-          console.log("Category updated successfully");
           this.$router.push({ name: "listCategory" });
         })
         .catch((error) => {

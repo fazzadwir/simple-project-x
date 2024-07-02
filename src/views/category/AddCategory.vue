@@ -1,22 +1,27 @@
 <template>
-  <div>
-    <h1>Add Category</h1>
-    <form @submit.prevent="addCategory">
-      <label for="name">Name:</label>
-      <input v-model="name" type="text" id="name" required />
-      <label for="image">Image:</label>
-      <input type="file" @change="listenFile" multiple />
-      <button type="button" @click="cancelAdd">Cancel</button>
-      <button type="submit" @click="addcategory">Save</button>
-    </form>
-  </div>
+  <b-container>
+    <h1 class="text-center">Add Category</h1>
+    <b-form @submit.prevent="addCategory">
+      <b-form-group label="Name:" label-for="name">
+        <b-form-input v-model="name" id="name" required></b-form-input>
+      </b-form-group>
+      
+      <b-form-group label="Image:" label-for="file">
+        <b-form-file id="file" @change="listenFile" multiple></b-form-file>
+      </b-form-group>
+      
+      <b-button-group class="mt-3">
+        <b-button variant="secondary" @click="cancelAdd">Cancel</b-button>
+        <b-button type="submit" variant="primary">Save</b-button>
+      </b-button-group>
+    </b-form>
+  </b-container>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      mainId: "",
       name: "",
       file: null,
     };
@@ -27,11 +32,8 @@ export default {
     },
     listenFile(event) {
       this.file = event.target.files;
-      console.log("file", this.file[0]);
     },
     addCategory() {
-      console.log("resultFile", this.file[0]);
-
       let formData = new FormData();
       formData.append("file", this.file[0]);
 
@@ -44,25 +46,14 @@ export default {
           },
         })
         .then((response) => {
-          alert("File ditambah!");
-          console.log("response", response.data.location);
           image = response.data.location;
-        
-          this.$axios
-            .post("categories", { 
-              name: this.name, 
-              image: image
-            })
-            .then(() => {
-              alert('Data ditambah!');
-              this.$router.push({ name: "listCategory" });
-            })
-            .catch((error) => {
-              console.error("Error adding category:", error);
-            });
+          return this.$axios.post("categories", { name: this.name, image: image });
+        })
+        .then(() => {
+          this.$router.push({ name: "listCategory" });
         })
         .catch((error) => {
-          console.error("Error uploading file:", error);
+          console.error("Error adding category:", error);
         });
     }
   }
