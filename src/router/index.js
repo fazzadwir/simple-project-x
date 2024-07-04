@@ -1,13 +1,10 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import LoginView from "@/views/login/Login.vue";
-import ListProduct from "@/views/product/ListProduct.vue";
-import AddProduct from "@/views/product/AddProduct.vue";
-import EditProduct from "@/views/product/EditProduct.vue";
-import ListCategory from "@/views/category/ListCategory.vue";
-import ListUser from "@/views/user/ListUser.vue";
-import addUser from "@/views/user/AddUser.vue";
-import EditUser from "@/views/user/EditUser.vue";
-import store from "@/store";
+import { createRouter, createWebHashHistory } from 'vue-router'
+import LoginView from '@/views/login/Login.vue'
+import ListProduct from '@/views/product/ListProduct.vue'
+import AddProduct from '@/views/product/AddProduct.vue'
+import EditProduct from '@/views/product/EditProduct.vue'
+import ListCategory from '@/views/category/ListCategory.vue'
+import store from '@/store'
 
 const routes = [
   {
@@ -19,60 +16,36 @@ const routes = [
     },
   },
   {
-    path: "/product",
-    name: "listProduct",
+    path: '/product',
+    name: 'listProduct',
     component: ListProduct,
-    meta: {
-      requireAuth: true,
-    },
+    meta:{
+      requireAuth: true
+    }
   },
   {
-    path: "/addProduct",
-    name: "addProduct",
+    path: '/addProduct',
+    name: 'addProduct',
     component: AddProduct,
-    meta: {
-      requireAuth: true,
-    },
+    meta:{
+      requireAuth: true
+    }
   },
   {
-    path: "/editProduct/",
-    name: "editProduct",
+    path: '/editProduct/',
+    name: 'editProduct',
     component: EditProduct,
-    meta: {
-      requireAuth: true,
-    },
+    meta:{
+      requireAuth: true
+    }
   },
   {
-    path: "/category",
-    name: "listCategory",
+    path: '/category',
+    name: 'listCategory',
     component: ListCategory,
-    meta: {
-      requireAuth: true,
-    },
-  },
-  {
-    path: "/user",
-    name: "user table",
-    component: ListUser,
-    meta: {
-      requireAuth: true,
-    },
-  },
-  {
-    path: "/editUser/",
-    name: "edit user",
-    component: EditUser,
-    meta: {
-      requireAuth: true,
-    },
-  },
-  {
-    path: "/addUser",
-    name: "add user",
-    component: addUser,
-    meta: {
-      requireAuth: true,
-    },
+    meta:{
+      requireAuth: true
+    }
   },
 ];
 
@@ -87,9 +60,9 @@ router.beforeEach((to, from, next) => {
       next("/");
     }
   }
-  if (to.matched.some((record) => record.meta.guest)) {
-    if (store.state.userdata !== null) {
-      next("/product");
+  if(to.matched.some(record => record.meta.guest)){
+    if(store.state.userdata !== null){
+      next('/product')
     }
   }
   next();

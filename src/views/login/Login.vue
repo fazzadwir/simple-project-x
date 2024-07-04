@@ -14,7 +14,7 @@
 </template>
 
 <script>
-  import { BButton } from "bootstrap-vue-next";
+import { BButton } from "bootstrap-vue-next";
 import cookie from "js-cookie";
   export default{
     name: 'Login',
