@@ -39,5 +39,3 @@ app.use(router)
 app.use(createBootstrap({ components: true, directives: true }))
 app.config.globalProperties.$axios = {...axiosinstance}
 app.mount('#app')
-
-
