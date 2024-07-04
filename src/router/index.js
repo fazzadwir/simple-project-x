@@ -48,7 +48,7 @@ router.beforeEach((to, from, next)=>{
   }
   if(to.matched.some(record => record.meta.guest)){
     if(store.state.userdata !== null){
-      next('/product')
+      next('/category')
     }
   }
   next();
