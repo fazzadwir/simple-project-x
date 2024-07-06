@@ -9,6 +9,7 @@ import axios from 'axios'
 import { createBootstrap } from "bootstrap-vue-next";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
+import "@/assets/app.css"
 
 const axiosinstance = axios.create({
     baseURL: 'https://api.escuelajs.co/api/v1/',

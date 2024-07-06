@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1 class="text-center white">Product List</h1>
-        <button @click="routeAddProduct">Add Product</button>
+        <button @click="routeAddProduct">Add Product</button> |
         <table class="table text-center">
             <thead>
                 <tr>

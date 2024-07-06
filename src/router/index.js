@@ -7,6 +7,7 @@ import ListCategory from "@/views/category/ListCategory.vue";
 import ListUser from "@/views/user/ListUser.vue";
 import EditUser from "@/views/user/EditUser.vue";
 import AddUser from "@/views/user/AddUser.vue";
+import Dasbord from "@/dasbord/Dasbord.vue"
 import store from "@/store";
 
 const routes = [
@@ -74,6 +75,14 @@ const routes = [
       requireAuth: true,
     },
   },
+  {
+    path: "/dasbord",
+    name: "dasbord",
+    component: Dasbord,
+    meta: {
+      requireAuth:true,
+    },
+  }
 ];
 
 const router = createRouter({
