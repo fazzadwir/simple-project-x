@@ -9,8 +9,8 @@ import AddCategory from "@/views/category/AddCategory.vue"
 import ListUser from "@/views/user/ListUser.vue";
 import EditUser from "@/views/user/EditUser.vue";
 import AddUser from "@/views/user/AddUser.vue";
-import Register from '@/views/login/Register.vue'
 import store from "@/store";
+import Register from '@/views/login/Register.vue'
 
 const routes = [
   {
