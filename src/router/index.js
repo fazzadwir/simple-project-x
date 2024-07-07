@@ -10,6 +10,7 @@ import ListUser from "@/views/user/ListUser.vue";
 import EditUser from "@/views/user/EditUser.vue";
 import AddUser from "@/views/user/AddUser.vue";
 import store from "@/store";
+import Register from '@/views/login/Register.vue'
 
 const routes = [
   {
@@ -85,6 +86,14 @@ const routes = [
     path: "/category/addData",
     name: "addCategory",
     component: AddCategory,
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register,
+    meta:{
+      guest: true
+    }
   },
 ];
 
