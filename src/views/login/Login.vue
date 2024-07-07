@@ -2,7 +2,6 @@
   <div class="views_login">
     <div class="box">
       <h1>Login</h1>
-      <BButton>cek</BButton>
       <form @submit.prevent="submit">
         <input type="text" v-model="email" placeholder="Enter your username">
         <input type="password" v-model="password" placeholder="Enter your password">

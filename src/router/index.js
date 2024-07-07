@@ -4,6 +4,8 @@ import ListProduct from "@/views/product/ListProduct.vue";
 import AddProduct from "@/views/product/AddProduct.vue";
 import EditProduct from "@/views/product/EditProduct.vue";
 import ListCategory from "@/views/category/ListCategory.vue";
+import EditCategory from "@/views/category/EditCategory.vue"
+import AddCategory from "@/views/category/AddCategory.vue"
 import ListUser from "@/views/user/ListUser.vue";
 import EditUser from "@/views/user/EditUser.vue";
 import AddUser from "@/views/user/AddUser.vue";
@@ -73,6 +75,16 @@ const routes = [
     meta: {
       requireAuth: true,
     },
+  },
+  {
+    path: "/category/editData/:id",
+    name: "editCategory",
+    component: EditCategory,
+  },
+  {
+    path: "/category/addData",
+    name: "addCategory",
+    component: AddCategory,
   },
 ];
 
