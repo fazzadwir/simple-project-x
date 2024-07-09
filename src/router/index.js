@@ -10,8 +10,9 @@ import ListUser from "@/views/user/ListUser.vue";
 import EditUser from "@/views/user/EditUser.vue";
 import AddUser from "@/views/user/AddUser.vue";
 import store from "@/store";
+import Dasbord from "../views/dasbord/Dasbord.vue";
 import Register from '@/views/login/Register.vue';
-import Dasbord from "@/views/dasbord/dasbord.vue";
+
 
 const routes = [
  
