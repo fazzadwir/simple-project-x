@@ -102,10 +102,8 @@ const routes = [
     path: "/dasbord",
     name: "dasbord",
     component: Dasbord,
-    meta: {
-      guest: true,
+
     },
-  },
 ];
 
 const router = createRouter({
