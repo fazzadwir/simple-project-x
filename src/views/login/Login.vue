@@ -58,7 +58,7 @@ import cookie from "js-cookie";
           // 1 = 1 jam
           this.$store.commit('SET_LOGIN', forcookie)
           alert('Anda telah berhasil Login!');
-          this.$router.push({path: '/product'})
+          this.$router.push({path: '/dasbord'})
         })
       },
       routeToRegisterPage(){
