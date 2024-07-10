@@ -127,8 +127,8 @@ export default {
         });
     },
     performSearch() {
-      this.searchQuery = this.tempSearchQuery; // Apply the temporary search query
-      this.currentPage = 1; // Reset to first page after search
+      this.searchQuery = this.tempSearchQuery;
+      this.currentPage = 1;
     },
     addUser() {
       this.$router.push("/addUser");
@@ -140,7 +140,7 @@ export default {
       this.$axios.delete("users/" + id).then((res) => {
         if (res) {
           this.getListUser();
-          alert("Delete success");
+          alert("Delete success");    
         }
       });
     },

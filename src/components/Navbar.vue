@@ -4,7 +4,8 @@
       <li>
         <RouterLink to="/product">Products</RouterLink>
         <RouterLink to="/category">Categories</RouterLink>
-        <RouterLink to="/user">user</RouterLink>
+        <RouterLink to="/user">User</RouterLink>
+        <RouterLink to="/profile">Profile</RouterLink>
         <button @click="logout">Logout</button>
       </li>
     </ul>

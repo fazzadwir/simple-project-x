@@ -1,6 +1,6 @@
 <template>
   <div class="m-5">
-    <h1>Edit User Data</h1>
+    <h1>Edit profile</h1>
     <b-form @submit.prevent="putData">
       <b-form-group label="Email" label-for="email-input">
         <b-form-input
@@ -28,7 +28,6 @@
           type="password"
           v-model="password"
           placeholder="Insert new password"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -54,7 +53,7 @@
       </b-form-group>
       <b-row class="mt-3">
         <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button @click="goBack" variant="secondary">Back</b-button>
+        <b-button @click="goProfile" variant="secondary">Back</b-button>
       </b-row>
     </b-form>
   </div>
@@ -72,49 +71,60 @@ export default {
       role: "",
       avatar: "",
       file: null,
+      user: null,
     };
   },
   methods: {
     listenFile(event) {
       this.file = event.target.files[0];
       console.log("Selected file:", this.file);
-      this.showUploadButton = !!this.file;
     },
     putData() {
       let formData = new FormData();
-      formData.append("file", this.file);
-      console.log("FormData for file upload:", formData);
+      if (this.file) {
+        formData.append("file", this.file);
+        console.log("FormData for file upload:", formData);
+        this.$axios
+          .post("files/upload", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((uploadResponse) => {
+            alert("File added!");
+            console.log("File upload response:", uploadResponse.data.location);
+            this.updateUser(uploadResponse.data.location);
+          })
+          .catch((error) => {
+            console.error(
+              "Error uploading file:",
+              error.response || error.message
+            );
+            alert("Failed to upload file. Please try again.");
+          });
+      } else {
+        this.updateUser(this.avatar);
+      }
+    },
+    updateUser(image) {
+      let userPayload = {
+        email: this.email,
+        name: this.name,
+        password: this.password,
+        role: this.role,
+        avatar: image,
+      };
+      console.log("User payload:", userPayload);
       this.$axios
-        .post("files/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((uploadResponse) => {
-          alert("File added!");
-          console.log("File upload response:", uploadResponse.data.location);
-          let image = uploadResponse.data.location;
-          let userPayload = {
-            id: this.$route.query.id,
-            email: this.email,
-            name: this.name,
-            password: this.password,
-            role: this.role,
-            avatar: image ? image : this.avatar,
-          };
-          console.log("User payload:", userPayload);
-          return this.$axios.put("/users/" + this.$route.query.id, userPayload);
-        })
+        .put("/users/" + this.$route.query.id, userPayload)
         .then((updateResponse) => {
           alert("Profile updated successfully!");
           let updatedUser = {
             ...this.user,
-            avatar: updateResponse.data.avatar,
+            ...userPayload,
           };
           cookie.set("userdata", JSON.stringify(updatedUser));
-          this.$router.push("/profile").then(() => {
-            window.location.reload();
-          });
+          this.$router.push("/profile");
         })
         .catch((error) => {
           console.error(
@@ -125,22 +135,25 @@ export default {
         });
     },
     loadUserData() {
+      console.log("Loading user data for ID:", this.$route.query.id);
       this.$axios
         .get("users/" + this.$route.query.id)
         .then((res) => {
           const user = res.data;
+          this.user = user;
           this.email = user.email;
           this.name = user.name;
           this.role = user.role;
           this.avatar = user.avatar;
+          console.log("Loaded user data:", user);
         })
         .catch((error) => {
           console.error("Error loading user data:", error);
           alert("Failed to load user data. Please try again.");
         });
     },
-    goBack() {
-      this.$router.push("/user");
+    goProfile() {
+      this.$router.push("/profile");
     },
   },
   mounted() {

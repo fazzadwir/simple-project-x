@@ -43,12 +43,11 @@
       <b-form-group label="Avatar" label-for="avatar-input">
         <b-form-input
           id="avatar-input"
-          type="text"
-          v-model="avatar"
-          placeholder="Insert new avatar link"
+          @change="listenFile"
+          type="file"
+          multiple
         ></b-form-input>
       </b-form-group>
-
       <b-button type="submit" variant="primary">Add user</b-button>
     </b-form>
   </div>
@@ -63,29 +62,48 @@ export default {
       password: "",
       role: "",
       avatar: "",
+      file: null,
     };
   },
   methods: {
     addData() {
+      let formData = new FormData();
+      formData.append("file", this.file[0]);
+      console.log("FormData for file upload:", formData);
+
       this.$axios
-        .post("users", {
-          email: this.email,
-          name: this.name,
-          password: this.password,
-          role: this.role,
-          avatar:
-            this.avatar ||
-            "https://akornas.ac.id/wp-content/uploads/2021/12/placeholder.jpg",
+        .post("files/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         })
         .then((res) => {
-          console.log("Add user success", res);
-          alert("Add user success.");
+          alert("File added!");
+          console.log("File upload response:", res.data.location);
+          let image = res.data.location;
+          let userPayload = {
+            email: this.email,
+            name: this.name,
+            password: this.password,
+            role: this.role,
+            avatar: image,
+          };
+          console.log("User payload:", userPayload);
+
+          return this.$axios.post("users", userPayload);
+        })
+        .then((res) => {
+          alert("Add user success!");
           this.$router.push("/user");
         })
         .catch((error) => {
-          console.error("Error add user:", error);
+          console.error("Error adding user:", error.response || error.message);
           alert("Failed to add user. Please try again.");
         });
+    },
+    listenFile(event) {
+      this.file = event.target.files;
+      console.log("Selected file:", this.file[0]);
     },
   },
 };

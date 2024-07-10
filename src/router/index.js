@@ -4,13 +4,15 @@ import ListProduct from "@/views/product/ListProduct.vue";
 import AddProduct from "@/views/product/AddProduct.vue";
 import EditProduct from "@/views/product/EditProduct.vue";
 import ListCategory from "@/views/category/ListCategory.vue";
-import EditCategory from "@/views/category/EditCategory.vue"
-import AddCategory from "@/views/category/AddCategory.vue"
+import EditCategory from "@/views/category/EditCategory.vue";
+import AddCategory from "@/views/category/AddCategory.vue";
 import ListUser from "@/views/user/ListUser.vue";
 import EditUser from "@/views/user/EditUser.vue";
 import AddUser from "@/views/user/AddUser.vue";
 import store from "@/store";
-import Register from '@/views/login/Register.vue'
+import Register from "@/views/login/Register.vue";
+import ProfileView from "@/views/profile/ProfileView.vue";
+import EditProfile from "@/views/profile/EditProfile.vue";
 
 const routes = [
   {
@@ -54,6 +56,22 @@ const routes = [
     },
   },
   {
+    path: "/profile",
+    name: "profile",
+    component: ProfileView,
+    meta: {
+      requireAuth: true,
+    },
+  },
+  {
+    path: "/editProfile",
+    name: "EditProfile",
+    component: EditProfile,
+    meta: {
+      requireAuth: true,
+    },
+  },
+  {
     path: "/user",
     name: "listUser",
     component: ListUser,
@@ -88,12 +106,12 @@ const routes = [
     component: AddCategory,
   },
   {
-    path: '/register',
-    name: 'register',
+    path: "/register",
+    name: "register",
     component: Register,
-    meta:{
-      guest: true
-    }
+    meta: {
+      guest: true,
+    },
   },
 ];
 
