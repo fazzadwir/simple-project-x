@@ -112,7 +112,7 @@ export default {
             avatar: updateResponse.data.avatar,
           };
           cookie.set("userdata", JSON.stringify(updatedUser));
-          this.$router.push("/profile").then(() => {
+          this.$router.push("/user").then(() => {
             window.location.reload();
           });
         })
