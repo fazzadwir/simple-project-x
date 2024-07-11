@@ -4,7 +4,7 @@
         <div class="col-4">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title mb-4">Register</h5>
+              <h5 class="card-title mb-4">Daftar</h5>
               <form>
                 <div class="mb-3">
                   <label htmlFor="name" class="form-label">Name </label>
@@ -70,11 +70,11 @@
                     type="button"
                     class="btn btn-primary btn-block"
                   >
-                    Register Now
+                    Daftar Sekarang
                   </button>
                   <p class="text-center">
-                    Have already an account
-                    <router-link to="/#">Login here</router-link>
+                    Sudah Melakukan Pendaftaran
+                    <router-link to="/#">Login Disini</router-link>
                   </p>
                 </div>
               </form>
@@ -109,15 +109,17 @@
           email: this.email,
           password: this.password,
           password_confirmation: this.confirmPassword,
+          role: "customer",
+          avatar: "https://i.imgur.com/DTfowdu.jpg"
         };
         this.$axios.post("/users/", {
           adduser
       })
           .then((response) => {
+            alert('User Registered')
             let userdata = Object.assign(adduser.data)
             let forcookie = JSON.stringify(userdata)
             this.$cookie.set("userdata", forcookie)
-            alert('User Registered')
             this.$router.push({path:'/#'});
             return response;
           })
@@ -125,6 +127,7 @@
             this.isSubmitting = false;
             if (error.response.data.errors != undefined) {
               this.validationErrors = error.response.data.errors;
+              alert("Data Yang Anda Masukan Salah,Silakan Coba Lagi.")
             }
             return error;
           });
