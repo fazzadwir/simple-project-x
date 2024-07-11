@@ -8,6 +8,11 @@ body {
   color: #fff;
 }
 
+.error_message {
+  color: red;
+  margin-top: 10px;
+}
+
 .button-group {
   display: flex;
   flex-wrap: wrap;
@@ -64,10 +69,6 @@ button.btn.btn-md.btn-primary {
 
 .text-center {
   text-align: center;
-}
-
-.white {
-  color: white;
 }
 
 .mb-3 {
