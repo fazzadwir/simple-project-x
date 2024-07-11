@@ -1,32 +1,50 @@
 <template>
-    <div>
-        <h1 class="text-center white">Edit Product</h1>
-    </div>
+    <div class="container">
+        <div class="edit_container">
+            <div class="left">
+                <div class="img_container">
+                    <img :src="this.images" alt="Gambar Produk">
+                </div>
+            </div>
+            <div class="right">
+                    <div class="title">
+                        <h1 class="text-center white">Edit Produk</h1>
+                    <div class="body">
+                        <form>
+                            <div class="input">
+                                <span>Nama Produk</span>
+                                <b-form-input v-model="title" class="in"></b-form-input>
+                            </div>
+                            <div class="input">
+                                <span>Category</span>
+                                <b-form-select v-model="category" class="in mb-3" disabled>
+                                    <b-form-select-option v-for="(item, index) in categoryProductList" :key="index" :value="item.id">>{{ item.name }}</b-form-select-option>
+                                </b-form-select>
+                            </div>
+                            <div class="input">
+                                <span>Description</span>
+                                <b-form-textarea v-model="description" class="in"></b-form-textarea>
+                            </div>
+                            <div class="input">
+                                <span>Harga</span>
+                                <b-form-input type="number" v-model="price" class="in"></b-form-input>
+                            </div>
+                            <div class="input">
+                                <span>Ubah Gambar</span>
+                                <b-form-file @change="listenFile" class="in" accept="image/*"></b-form-file>
+                            </div>
 
-    <table class="table text-center">
-        <tbody>
-            <tr>
-                <td v-if="!this.downloading">Sedang Memproses</td>
-            </tr>
-            <tr>
-                <td v-if="this.downloading">
-                    <form>
-                        Title: <br><input type="text" v-model="title"><br>
-                        Category: <br>
-                        <select v-model="category" disabled>
-                                <option v-for="(item, index) in categoryProductList" :key="index" :value="item.id">{{ item.name }}</option>
-                        </select><br>
-                        Description: <br><textarea v-model="description"/><br>
-                        Price: <br><input type="number" v-model="price"><br>
-                        <img :src="this.images" alt=""><br>
-                        <input type="file" @change="listenFile" multiple>
-                        <!-- Image URL: <br><input type="text" v-model="images"><br> -->
-                            <br><button @click="routeToPageHome">Back</button><button class="submit" @click="editData">Submit</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                            <div class="btn_group">
+                                <button class="btn_primary btn-wide" @click="editData">Ubah Produk</button>
+                                <button class="btn_delete btn-wide" @click="deleteItem">Hapus Produk</button>
+                                <button class="btn_secondary btn-wide" @click="routeToPageHome">Kembali</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     
 
@@ -139,7 +157,25 @@ export default{
                         alert('Data diubah!')
                         this.$router.push({path: '/product'})
                     }) 
-        }
+        },
+        deleteItem(){
+            this.$Swal.fire({
+                title: "Apakah Anda yakin?",
+                showDenyButton: true,
+                confirmButtonText: "Tidak",
+                denyButtonText: `Ya`
+            }).then((result) => {
+                if (result.isDenied) {
+                    this.$axios.delete('products/' + this.mainId).then(()=>{
+                        this.$Swal.fire({
+                            title: "Produk Dihapus!",
+                            icon: "success"
+                        });
+                    this.$router.push({path: '/product'})
+                    })
+                }
+            });
+        },
     },
     mounted(){
         this.getMainId();

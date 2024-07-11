@@ -1,31 +1,42 @@
 <template>
-    <div>
-        <h1 class="text-center white">Add Product</h1>
+    <div class="container">
+        <div class="single_add_container">
+            <div class="title">
+                <h1 class="text-center white">Tambah Produk</h1>
+            </div>
+            <div class="body">
+                <form>
+                    <div class="input">
+                        <span>Nama Produk</span>
+                        <b-form-input v-model="title" class="in"></b-form-input>
+                    </div>
+                    <div class="input">
+                        <span>Kategori</span>
+                        <b-form-select v-model="category" class="in mb-3">
+                            <b-form-select-option v-for="(item, index) in categoryProductList" :key="index" :value="item.id">>{{ item.name }}</b-form-select-option>
+                        </b-form-select>
+                    </div>
+                    <div class="input">
+                        <span>Deskripsi</span>
+                        <b-form-textarea v-model="description" class="in"></b-form-textarea>
+                    </div>
+                    <div class="input">
+                        <span>Harga</span>
+                        <b-form-input type="number" v-model="price" class="in"></b-form-input>
+                    </div>
+                    <div class="input">
+                        <span>Gambar</span>
+                        <b-form-file @change="listenFile" class="in" accept="image/*"></b-form-file>
+                    </div>
+
+                    <div class="btn_group">
+                        <button class="btn_primary btn-wide" @click="addData">Tambah Produk</button>
+                        <button class="btn_secondary btn-wide" @click="routeToPageHome">Kembali</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <table class="table text-center">
-        <tbody>
-            <tr>
-                <td>
-                    <form>
-                        Title: <br><input type="text" v-model="title"><br>
-                        Category: <br>
-                        <select v-model="category">
-                                <option v-for="(item, index) in categoryProductList" :key="index" :value="item.id">{{ item.name }}</option>
-                        </select><br>
-                        Description: <br><textarea v-model="description"/><br>
-                        Price: <br><input type="number" v-model="price"><br>
-                        <!-- Image URL: <br><input type="text" v-model="images"><br> -->
-                        <input type="file" @change="listenFile" multiple>
-                        <br><button @click="routeToPageHome">Back</button><button class="submit" @click="addData">Submit</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    
-
 </template>
 
 <script>
@@ -69,7 +80,6 @@ export default{
                     'Content-Type': 'multipart/form-data'
                 }
                 }).then((response) =>{
-                    alert('FIle ditambah!')
                     console.log('response', response.data.location)
                     image = response.data.location;
 
@@ -81,7 +91,10 @@ export default{
                     images: [image]
 
                     }).then(() =>{
-                        alert('Data ditambah!')
+                        this.$Swal.fire({
+                            title: "Produk Ditambah!",
+                            icon: "success"
+                        });
                         this.$router.push({path: '/product'})
                     })
 

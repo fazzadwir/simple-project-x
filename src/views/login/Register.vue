@@ -1,135 +1,79 @@
 <template>
-    <layout-div>
-      <div class="register-vue">
-        <div class="col-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title mb-4">Register</h5>
-              <form>
-                <div class="mb-3">
-                  <label htmlFor="name" class="form-label">Name </label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="name"
-                    name="name"
-                    v-model="name"
-                  />
-                  <div v-if="validationErrors.name" class="flex flex-col">
-                    <small class="text-danger">
-                      {{ validationErrors?.name[0] }}
-                    </small>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label htmlFor="email" class="form-label">Email address </label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="email"
-                    name="email"
-                    v-model="email"
-                  />
-                  <div v-if="validationErrors.email" class="flex flex-col">
-                    <small class="text-danger">
-                      {{ validationErrors?.email[0] }}
-                    </small>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label htmlFor="password" class="form-label">Password </label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="password"
-                    name="password"
-                    v-model="password"
-                  />
-                  <div v-if="validationErrors.password" class="flex flex-col">
-                    <small class="text-danger">
-                      {{ validationErrors?.password[0] }}
-                    </small>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label htmlFor="confirm_password" class="form-label"
-                    >Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="confirm_password"
-                    name="confirm_password"
-                    v-model="confirmPassword"
-                  />
-                </div>
-                <div class="d-grid gap-2">
-                  <button
-                    :disabled="isSubmitting"
-                    @click="registerAction()"
-                    type="button"
-                    class="btn btn-primary btn-block"
-                  >
-                    Register Now
-                  </button>
-                  <p class="text-center">
-                    Have already an account
-                    <router-link to="/#">Login here</router-link>
-                  </p>
-                </div>
-              </form>
+  <div class="login_box">
+    <div class="two_view">
+      <div class="left"></div>
+      <div class="right">
+        <div class="form_container">
+          <span class="logo">
+            <img src="../../assets/img/tokox_logo.png" alt="tokox_logo">
+          </span>
+          <form>
+            <input type="text" v-model="name" placeholder="Nama">
+            <input type="text" v-model="email" placeholder="Email">
+            <input type="password" v-model="password" placeholder="Password">
+            <input type="password" v-model="confirmPassword" placeholder="Konfirmasi Password">
+            <div class="btn_group">
+              <button class="btn_primary" @click="registerAction">Daftar</button>
+              <button class="btn_secondary"@click="routeToLoginPage">Masuk</button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
-    </layout-div>
-  </template>
-  
-  <script>
-  
-  export default {
-    name: "RegisterPage",
-    components: {
-    },
-    data() {
-      return {
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        validationErrors: {},
-        isSubmitting: false,
+    </div>
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: "RegisterPage",
+  components: {
+  },
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      isSubmitting: false,
+    };
+  },
+  methods: {
+    registerAction() {
+
+      if(this.password !== this.confirmPassword){
+        alert("Password Anda tidak sama dengan konfirmasi password Anda!");
+        return;
+      }
+
+      this.isSubmitting = true;
+      let adduser = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+        role: "customer",
+        avatar: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
       };
-    },
-    methods: {
-      registerAction() {
-        this.isSubmitting = true;
-        let adduser = {
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          password_confirmation: this.confirmPassword,
-        };
-        this.$axios.post("/users/", {
-          adduser
-      })
-          .then((response) => {
-            let userdata = Object.assign(adduser.data)
-            let forcookie = JSON.stringify(userdata)
-            this.$cookie.set("userdata", forcookie)
-            alert('User Registered')
-            this.$router.push({path:'/#'});
-            return response;
-          })
-          .catch((error) => {
-            this.isSubmitting = false;
-            if (error.response.data.errors != undefined) {
-              this.validationErrors = error.response.data.errors;
-            }
-            return error;
+      this.$axios.post("/users/", adduser)
+        .then((response) => {
+          this.$Swal.fire({
+            title: "Pendaftaran Berhasil!",
+            text: "Silahkan Login",
+            icon: "success"
           });
-      },
+          this.$router.push({path:'/'});
+        })
+        .catch((error) => {
+          this.isSubmitting = false;
+          if (error.response.data.errors != undefined) {
+            alert("Terjadi Kesalahan!")
+          }
+          return error;
+        });
     },
-  };
-  </script>
-  
+    routeToLoginPage(){
+        this.$router.push({ name: 'login' });
+      }
+  },
+};
+</script>

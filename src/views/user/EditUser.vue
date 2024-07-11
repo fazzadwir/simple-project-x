@@ -1,59 +1,53 @@
 <template>
-  <div>
-    <h1>Edit User Data</h1>
-    <b-form @submit.prevent="putData">
-      <b-form-group label="Email" label-for="email-input">
-        <b-form-input
-          id="email-input"
-          type="email"
-          v-model="email"
-          placeholder="Insert new email"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Name" label-for="name-input">
-        <b-form-input
-          id="name-input"
-          type="text"
-          v-model="name"
-          placeholder="Insert new name"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Password" label-for="password-input">
-        <b-form-input
-          id="password-input"
-          type="password"
-          v-model="password"
-          placeholder="Insert new password"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Role" label-for="role-select">
-        <b-form-select id="role-select" v-model="role" required>
-          <option value="">Select role</option>
-          <option value="customer">Customer</option>
-          <option value="admin">Admin</option>
-        </b-form-select>
-      </b-form-group>
-
-      <b-form-group label="Avatar" label-for="avatar-input">
-        <b-form-input
-          id="avatar-input"
-          type="text"
-          v-model="avatar"
-          placeholder="Insert new avatar link"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-button type="submit" variant="primary">Submit</b-button>
-    </b-form>
+  <div class="container">
+    <div class="edit_container">
+      <div class="left">
+        <div class="img_container">
+          <img :src="this.avatar" alt="Gambar Produk">
+        </div>
+      </div>
+      <div class="right">
+          <div class="title">
+            <h1 class="text-center white">Edit User</h1>
+          </div>
+          <div class="body">
+            <form>
+              <div class="input">
+                <span>Email</span>
+                <b-form-input v-model="email" type="email" class="in"></b-form-input>
+              </div>
+              <div class="input">
+                <span>Nama</span>
+                <b-form-input v-model="name" class="in"></b-form-input>
+              </div>
+              <div class="input">
+                <span>Password Baru</span>
+                <b-form-input v-model="password" type="password" class="in"></b-form-input>
+              </div>
+              <div class="input">
+                <span>Role</span>
+                  <b-form-select v-model="role" class="in mb-3">
+                      <b-form-select-option value="customer">Customer</b-form-select-option>
+                      <b-form-select-option value="admin">Admin</b-form-select-option>
+                  </b-form-select>
+              </div>
+              <div class="input">
+                <span>Avatar</span>
+                <b-form-input  @change="listenFile" type="file" class="in"></b-form-input>
+              </div>
+              <div class="btn_group">
+                  <button class="btn_primary btn-wide" @click="putData">Ubah User</button>
+                  <button class="btn_secondary btn-wide" @click="routeToPageHome">Kembali</button>
+              </div>
+            </form>
+          </div>
+        </div>
+    </div>
   </div>
 </template>
 
 <script>
+import cookie from "js-cookie";
 export default {
   data() {
     return {
@@ -62,29 +56,60 @@ export default {
       password: "",
       role: "",
       avatar: "",
+      file: null,
     };
   },
   methods: {
+    listenFile(event) {
+      this.file = event.target.files[0];
+      console.log("Selected file:", this.file);
+      this.showUploadButton = !!this.file;
+    },
     putData() {
+      let formData = new FormData();
+      let userPayload = {}
+      formData.append("file", this.file);
+      console.log("FormData for file upload:", formData);
       this.$axios
-        .put("users/" + this.$route.query.id, {
-          id: this.$route.query.id,
-          email: this.email,
-          name: this.name,
-          password: this.password,
-          role: this.role,
-          avatar:
-            this.avatar ||
-            "https://akornas.ac.id/wp-content/uploads/2021/12/placeholder.jpg",
+        .post("files/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         })
-        .then((res) => {
-          console.log("Successfully edited", res);
-          alert("Successfully edited");
-          this.$router.push("/user");
+        .then((uploadResponse) => {
+          alert("File added!");
+          console.log("File upload response:", uploadResponse.data.location);
+          let image = uploadResponse.data.location;
+          userPayload = {
+            id: this.$route.query.id,
+            email: this.email,
+            name: this.name,
+            password: this.password,
+            role: this.role,
+            avatar: image ? image : this.avatar,
+          };
+          console.log("User payload:", userPayload);
+          this.$axios.put("/users/" + this.$route.query.id, userPayload).then((updateResponse) => {
+          alert("Profile updated successfully!");
+          let tempUserData = cookie.getJSON('userdata')
+          if(tempUserData.id == this.$route.query.id){
+            userPayload.access_token = tempUserData.access_token,
+            userPayload.refresh_token = tempUserData.refresh_token
+            console.log('updated user', userPayload)
+          cookie.set("userdata", JSON.stringify(userPayload));
+          }
+          this.$router.push("/user").then(() => {
+            window.location.reload();
+          });
         })
+        })
+        
         .catch((error) => {
-          console.error("Error editing user:", error);
-          alert("Failed to edit user. Please try again.");
+          console.error(
+            "Error updating profile:",
+            error.response || error.message
+          );
+          alert("Failed to update profile. Please try again.");
         });
     },
     loadUserData() {
@@ -94,6 +119,7 @@ export default {
           const user = res.data;
           this.email = user.email;
           this.name = user.name;
+          this.password = user.password;
           this.role = user.role;
           this.avatar = user.avatar;
         })
@@ -102,6 +128,9 @@ export default {
           alert("Failed to load user data. Please try again.");
         });
     },
+    routeToPageHome(){
+      this.$router.push('/user');
+    }
   },
   mounted() {
     this.loadUserData();

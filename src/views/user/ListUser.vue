@@ -1,32 +1,22 @@
 <template>
-  <div class="home">
-    <h1>User Table</h1>
-    <b-row class="mb-3 align-items-center">
-      <b-col cols="12" md="4" class="mb-md-0">
-        <b-button variant="primary" @click="addUser">Add User</b-button>
-      </b-col>
-      <b-col
-        cols="12"
-        md="8"
-        class="mb-md-0 d-flex align-items-center justify-content-end"
-      >
-        <b-form-input
-          v-model="tempSearchQuery"
-          placeholder="Search user's name"
-          class="mr-2"
-        ></b-form-input>
-        <b-button variant="secondary" @click="performSearch" class="ml-2"
-          >OK</b-button
-        >
+  <div class="container">
+    <button class="btn_primary btn-wide" @click="addUser">Tambah User</button>
+    <div class="bar_container">
+      <div class="search">
+        <input type="text" v-model="tempSearchQuery">
+        <button class="btn_search" @click="performSearch">Cari</button>
+      </div>
+      <div class="filter">
         <b-form-select v-model="selectedName" class="ml-2">
           <option value="">All</option>
           <option v-for="name in uniqueNames" :key="name" :value="name">
             {{ name }}
           </option>
         </b-form-select>
-      </b-col>
-    </b-row>
-    <b-card>
+      </div>
+    </div>
+
+    <b-card class="mt-2">
       <b-table
         :items="paginatedUser"
         :fields="tableFields"
@@ -83,7 +73,7 @@ export default {
       selectedName: "",
       itemsPerPage: 10,
       currentPage: 1,
-      limitUser: 40,
+      limitUser: 1000,
       offsetUser: 5,
       tableFields: [
         { key: "id", label: "User ID" },

@@ -8,8 +8,8 @@
             <img src="../../assets/img/tokox_logo.png" alt="tokox_logo">
           </span>
           <form @submit.prevent="submit">
-            <input type="text" v-model="email" placeholder="Enter your username">
-            <input type="password" v-model="password" placeholder="Enter your password">
+            <input type="text" v-model="email" placeholder="Masukkan Email">
+            <input type="password" v-model="password" placeholder="Masukkan password">
             <div class="btn_group">
               <button class="btn_primary">Masuk</button>
               <button class="btn_secondary"@click="routeToRegisterPage">Daftar</button>
@@ -57,7 +57,10 @@ import cookie from "js-cookie";
           cookie.set("userdata", forcookie, {expires: 1});
           // 1 = 1 jam
           this.$store.commit('SET_LOGIN', forcookie)
-          alert('Anda telah berhasil Login!');
+          this.$Swal.fire({
+            title: "Login Berhasil!",
+            icon: "success"
+          });
           this.$router.push({path: '/product'})
         })
       },

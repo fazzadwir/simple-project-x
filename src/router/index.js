@@ -11,6 +11,8 @@ import EditUser from "@/views/user/EditUser.vue";
 import AddUser from "@/views/user/AddUser.vue";
 import store from "@/store";
 import Register from '@/views/login/Register.vue'
+import ProfileView from "@/views/profile/ProfileView.vue";
+import EditProfile from "@/views/profile/EditProfile.vue";
 
 const routes = [
   {
@@ -94,6 +96,22 @@ const routes = [
     meta:{
       guest: true
     }
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: ProfileView,
+    meta: {
+      requireAuth: true,
+    },
+  },
+  {
+    path: "/editProfile",
+    name: "EditProfile",
+    component: EditProfile,
+    meta: {
+      requireAuth: true,
+    },
   },
 ];
 

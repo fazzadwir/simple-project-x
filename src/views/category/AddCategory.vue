@@ -1,21 +1,28 @@
 <template>
-  <b-container>
-    <h1 class="text-center">Add Category</h1>
-    <b-form @submit.prevent="addCategory">
-      <b-form-group label="Name:" label-for="name">
-        <b-form-input v-model="name" id="name" required></b-form-input>
-      </b-form-group>
-      
-      <b-form-group label="Image:" label-for="file">
-        <b-form-file id="file" @change="listenFile" multiple></b-form-file>
-      </b-form-group>
-      
-      <b-button-group class="mt-3">
-        <b-button variant="secondary" @click="cancelAdd">Cancel</b-button>
-        <b-button type="submit" variant="primary">Save</b-button>
-      </b-button-group>
-    </b-form>
-  </b-container>
+  <div class="container">
+    <div class="single_add_container">
+      <div class="title">
+        <h1 class="text-center white">Tambah Produk</h1>
+      </div>
+      <div class="body">
+        <form>
+          <div class="input">
+            <span>Nama Kategori</span>
+            <b-form-input v-model="name" required class="in"></b-form-input>
+          </div>
+          <div class="input">
+            <span>Gambar</span>
+            <b-form-file @change="listenFile" class="in" accept="image/*"></b-form-file>
+          </div>
+
+          <div class="btn_group">
+            <button class="btn_primary btn-wide" @click="addCategory">Tambah Kategori</button>
+            <button class="btn_secondary btn-wide" @click="cancelAdd">Kembali</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -50,6 +57,10 @@ export default {
           return this.$axios.post("categories", { name: this.name, image: image });
         })
         .then(() => {
+          this.$Swal.fire({
+              title: "Kategori Ditambah!",
+              icon: "success"
+          });
           this.$router.push({ name: "listCategory" });
         })
         .catch((error) => {

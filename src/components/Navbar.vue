@@ -1,11 +1,13 @@
 <template>
-  <nav>
+  <nav class="text-bg-dark">
     <ul>
       <li>
-        <RouterLink to="/product">Products</RouterLink>
-        <RouterLink to="/category">Categories</RouterLink>
-        <RouterLink to="/user">user</RouterLink>
-        <button @click="logout">Logout</button>
+        <div class="left">
+        </div>
+        <div class="right">
+          <!-- <button @click="logout">Logout</button> -->
+           <img src="../assets/img/tokox_logo.png" alt="">
+        </div>
       </li>
     </ul>
   </nav>
