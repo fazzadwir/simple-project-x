@@ -15,6 +15,7 @@ import ProfileView from "@/views/profile/ProfileView.vue";
 import EditProfile from "@/views/profile/EditProfile.vue";
 
 const routes = [
+ 
   {
     path: "/",
     name: "login",
@@ -128,7 +129,7 @@ router.beforeEach((to, from, next) => {
   }
   if (to.matched.some((record) => record.meta.guest)) {
     if (store.state.userdata !== null) {
-      next("/product");
+      next("/dasbord");
     }
   }
   next();

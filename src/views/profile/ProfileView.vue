@@ -51,16 +51,33 @@ export default {
     return {
       file: null,
       showUploadButton: false,
+      user: null,
     };
   },
-  computed: {
-    user() {
-      const userdata = cookie.get("userdata");
-      console.log(userdata);
-      return userdata ? JSON.parse(userdata) : null;
-    },
+  created() {
+    this.fetchUserData();
   },
   methods: {
+    fetchUserData() {
+      const userdata = cookie.get("userdata");
+      const parsedData = userdata ? JSON.parse(userdata) : null;
+      const userId = parsedData ? parsedData.id : null;
+
+      if (userId) {
+        this.$axios
+          .get(`https://api.escuelajs.co/api/v1/users/${userId}`)
+          .then((response) => {
+            const userData = response.data;
+            cookie.set("userdata", JSON.stringify(userData));
+            this.user = userData;
+          })
+          .catch((error) => {
+            console.error("Error fetching user data:", error);
+          });
+      } else {
+        console.error("User ID is not available in cookies.");
+      }
+    },
     listenFile(event) {
       this.file = event.target.files[0];
       console.log("Selected file:", this.file);
@@ -90,7 +107,7 @@ export default {
             avatar: image,
           };
           console.log("User payload:", userPayload);
-          return this.$axios.put("/users/" + this.user.id, userPayload);
+          return this.$axios.put(`/users/${this.user.id}`, userPayload);
         })
         .then((updateResponse) => {
           alert("Profile updated successfully!");
@@ -102,6 +119,7 @@ export default {
           this.$router.push("/profile").then(() => {
             window.location.reload();
           });
+          this.user = updatedUser;
         })
         .catch((error) => {
           console.error(
@@ -113,7 +131,7 @@ export default {
     },
     editProfile(id) {
       console.log("Navigating to editProfile with ID:", id);
-      this.$router.push("/editProfile/?id=" + id);
+      this.$router.push(`/editProfile/?id=${id}`);
     },
     goHome() {
       this.$router.push("/");

@@ -7,12 +7,21 @@
           <span class="logo">
             <img src="../../assets/img/tokox_logo.png" alt="tokox_logo">
           </span>
-          <form @submit.prevent="submit">
-            <input type="text" v-model="email" placeholder="Enter your username">
-            <input type="password" v-model="password" placeholder="Enter your password">
+          <form @submit.prevent="validateForm">
             <div class="btn_group">
-              <button class="btn_primary">Masuk</button>
-              <button class="btn_secondary"@click="routeToRegisterPage">Daftar</button>
+              <input type="text" v-model="email" placeholder="Enter your username" @input="validateEmail" required>
+              <span v-if="emailError" class="error_message">{{ emailError }}</span>
+            </div>
+            <div class="btn_group">
+              <input type="password" v-model="password" placeholder="Enter your password" @input="validatePassword" required>
+              <span v-if="passwordError" class="error_message">{{ passwordError }}</span>
+            </div>
+            <div class="btn_group">
+              <button class="btn_primary" :disabled="!isFormValid">Masuk</button>
+              <button type="button" class="btn_secondary" @click="routeToRegisterPage">Daftar</button>
+            </div>
+            <div v-if="errorMessage" class="error_message">
+              {{ errorMessage }}
             </div>
           </form>
         </div>
@@ -58,7 +67,7 @@ import cookie from "js-cookie";
           // 1 = 1 jam
           this.$store.commit('SET_LOGIN', forcookie)
           alert('Anda telah berhasil Login!');
-          this.$router.push({path: '/product'})
+          this.$router.push({path: '/dasbord'})
         })
       },
       routeToRegisterPage(){

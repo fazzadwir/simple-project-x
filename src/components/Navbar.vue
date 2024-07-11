@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <!-- <nav>
     <ul>
       <li>
         <RouterLink to="/product">Products</RouterLink>
@@ -9,7 +9,7 @@
         <button @click="logout">Logout</button>
       </li>
     </ul>
-  </nav>
+  </nav> -->
 </template>
 
 <script>
