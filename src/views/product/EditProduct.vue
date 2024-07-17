@@ -14,7 +14,11 @@
           <form>
             <div class="input">
               <span>Nama Produk</span>
-              <b-form-input v-model="title" class="in"></b-form-input>
+              <b-form-input
+                v-model="title"
+                :disabled="userRole === 'customer'"
+                class="in"
+              ></b-form-input>
             </div>
             <div class="input">
               <span>Category</span>
@@ -31,6 +35,7 @@
               <span>Description</span>
               <b-form-textarea
                 v-model="description"
+                :disabled="userRole === 'customer'"
                 class="in"
               ></b-form-textarea>
             </div>
@@ -39,10 +44,11 @@
               <b-form-input
                 type="number"
                 v-model="price"
+                :disabled="userRole === 'customer'"
                 class="in"
               ></b-form-input>
             </div>
-            <div class="input">
+            <div class="input" v-if="userRole !== 'customer'">
               <span>Ubah Gambar</span>
               <b-form-file
                 @change="listenFile"
