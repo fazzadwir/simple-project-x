@@ -155,7 +155,8 @@ export default {
             ...userPayload,
           };
           cookie.set("userdata", JSON.stringify(updatedUser));
-          this.$router.push("/profile");
+          // this.$router.push("/profile");
+          window.location.reload()
         })
         .catch(error=>{
             if(error.response.data.message){

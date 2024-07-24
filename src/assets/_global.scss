@@ -448,6 +448,12 @@ nav{
   left: -280px;
   top: 0;
 
+  img{
+    height: 30px;
+    width: 80px;
+    margin: 0 auto;
+  }
+
   .nav-link {
     margin-top: 0.6rem;
   }
@@ -461,7 +467,7 @@ nav{
     right: -30px;
     top: 0;
     width: 30px;
-    height: 64px;
+    height: 63px;
     cursor: pointer;
     align-content: center;
   }
@@ -473,6 +479,71 @@ nav{
 
 .container{
   padding-top: 80px;
+}
+
+.dr_white {
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+}
+
+@media only screen and (max-width: 450px){
+  .bar_container{
+    flex-direction: column !important;
+    gap: 10px;
+
+    .search{
+      input{
+        width: 150px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 500px){
+  .edit_container{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px;
+    .left{
+      width: 100%;
+      .img_container{
+        display: flex;
+        justify-content: center;
+        height: 200px;
+        width: 250px;
+      }
+    }.right{
+      width: 100%;
+    }
+  }
+}
+
+@media only screen and (max-width: 700px){
+  nav{
+    ul{
+      li{
+        .right{
+          padding-right: 20px !important;
+        }
+      }
+    }
+  }
+
+  .two_view{
+    flex-direction: column !important;
+    .left{
+      height: 20% !important;
+      width: 100%;
+      border-radius: 0;
+    }
+    .right{
+      width: 100%;
+      border-radius: 0;
+      height: 100vh !important;
+      overflow-y: scroll;
+    }
+  }
 }
 
 

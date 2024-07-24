@@ -9,7 +9,7 @@
       <span v-if="toogleSwitch"><<</span>
       <span v-if="!toogleSwitch">>></span>
     </div>
-    <span class="px-2" style="text-align: center; font-size: 20px">Menu</span>
+    <img src="../assets/img/tokox_logo.png" alt="logo">
     <hr />
     <ul class="nav nav-pills flex-column mb-auto">
       <li>
@@ -120,7 +120,7 @@
         </RouterLink>
       </li>
     </ul>
-    <hr />
+    <!-- <hr />
     <button
       @click="logout"
       class="nav-link align-items-center gap-2 text-white"
@@ -142,7 +142,7 @@
         <line x1="21" x2="9" y1="12" y2="12" />
       </svg>
       Logout
-    </button>
+    </button> -->
   </div>
   <div v-else>Loading...</div>
 </template>
