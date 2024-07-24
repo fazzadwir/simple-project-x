@@ -1,58 +1,54 @@
 <template>
-    <div>
-        <h1 class="text-center white">Product List</h1>
-        <button @click="routeAddProduct">Add Product</button>
-        <table class="table text-center">
-            <thead>
-                <tr>
-                    <td>No.</td>
-                    <td>Name</td>
-                    <td>Price</td>
-                    <td class="desc">Description</td>
-                    <td class="category">Category</td>
-                    <!-- <td colspan="3" class="img">Image</td> -->
-                    <td class="img">Image</td>
-                    <td>Aksi</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="9" v-if="!this.downloading">Sedang mengunduh data</td>
-                </tr>
-                <tr v-for="(item, index) in dataProductList" :key="index">
-                    <td>{{ index+1 }}</td>
-                    <td>{{ item.title}}</td>
-                    <td>{{ item.price}}</td>
-                    <td class="desc">{{ item.description}}</td>
-                    <td class="category">{{ item.category}}</td>
-                    <!-- <td class="img"><img :src="item.image" alt="" style="width: 100px;"></td> -->
-                    <td class="img"><img :src="item.image1" alt="" style="width: 100px;"></td>
-                    <!-- <td class="img"><img :src="item.image2" alt="" style="width: 100px;"></td> -->
-                    <!-- <td class="img"><img :src="item.image3" alt="" style="width: 100px;"></td> -->
-                    <td>
-                        <button
-                        class="edit"
-                        @click="routeToEdit(item.id)"
-                        >Edit</button>
-                        <button
-                        class="delete"
-                        @click="deleteItem(item.id)"
-                        >Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="container">
+            <button v-if="userRole !== 'customer'" class="btn_primary btn-wide" @click="routeAddProduct">Tambah Produk</button>
+            <div class="bar_container">
+                <div class="search">
+                    <input type="text" v-model="search_value">
+                    <button class="btn_search" @click="search">Cari</button>
+                </div>
+                <div class="filter">
+                    <b-dropdown text="Urutkan">
+                        <b-dropdown-item value="1" class="primary_hover" @click="listenToSort(1)">Semua</b-dropdown-item>
+                        <b-dropdown-item  value="2" class="primary_hover" @click="listenToSort(2)">Termahal</b-dropdown-item>
+                        <b-dropdown-item  value="3" class="primary_hover" @click="listenToSort(3)">Termurah</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="product_container">
+                <div class="boxs" v-for="(item, index) in dataProductList" :key="index" @click="routeToEdit(item.id)">
+                    <div class="detail"></div>
+                    <div class="up">
+                        <div class="image">
+                            <img :src="item.image1" alt="product image">
+                        </div>
+                        <div class="wide">
+                            <h3>{{item.title}}</h3>
+                        </div>
+                    </div>
+                    <div class="down">
+                        <div class="others"><span class="price">{{ item.price }}</span></div>
+                        <div class="others">{{ item.category}}</div>
+                    </div>
+                </div>
+            </div>
     </div>
+
 </template>
 
 <script>
+import cookie from "js-cookie";
 
 export default{
     name: 'addProduct',
     data() {
         return {
             downloading: false,
-            dataProductList: []
+            dataProductList: [],
+            input: "",
+            search_value: "",
+            temp: [],
+            sort: "",
+            userRole: "",
         }
     },
     methods: {
@@ -71,10 +67,10 @@ export default{
                     productdata.forEach(item =>{
                         this.dataProductList.push({
                             'id': item.id?item.id:-1,
-                            'title': item.title?item.title:'no title',
+                            'title': item.title?this.limitText(item.title, 20):'no title',
                             'price': item.price?item.price:0,
                             'description': item.description?item.description:'no description',
-                            'category': item.category.name?item.category.name:'no category',
+                            'category': item.category.name?this.limitText(item.category.name, 15):'no category',
                             'image': item.category.image?item.category.image:'no image',
                             'categoryId': item.category.id?item.category.id:-1,
                             'image1': item.images[0]?this.regex(item.images[0]):'no image',
@@ -108,14 +104,61 @@ export default{
         deleteItem(id){
             if(confirm("yakin?")){
                 this.$axios.delete('products/' + id).then(()=>{
-                    alert("Data Berhasil dihapus!")
-                    window.location.reload();
+                    this.$Swal.fire({
+                        title: "Produk Ditambah!",
+                        icon: "success"
+                    }).then(window.location.reload())
                 })
             }
-        }
+        },
+        limitText(text, max){
+            if(text.length > 10){
+                const limitedText = text.slice(0, max)
+
+                return limitedText + "..."
+            }else{
+                return text
+            }
+        },
+        search(){
+            if(this.search_value){
+                let search = this.search_value.toLowerCase().replaceAll(" ", "")
+                this.dataProductList = [...this.temp].filter((product) =>
+                    product.title.toLowerCase().replaceAll(" ", "").includes(search)
+                );
+            }else{
+                this.dataProductList = this.temp;
+            }
+        },
+        listenToSort(data){
+            switch (data) {
+                case 1:
+                    this.dataProductList = [...this.temp]
+                    break;
+                case 2:
+                    this.dataProductList = [...this.temp].sort((a, b) => b.price - a.price)
+                    break;
+                default:
+                    this.dataProductList = [...this.temp].sort((a, b) => a.price - b.price)
+                    break;
+            }
+        },
+        fetchUserRole() {
+        const userdata = cookie.getJSON("userdata");
+            if (userdata && userdata.role) {
+                this.userRole = userdata.role.toLowerCase();
+            } else {
+                console.error("User role is not available in the cookie");
+            }
+        },
+
     },
     mounted() {
         this.getListDataProduct();
+        this.temp = this.dataProductList;
+    },
+    created(){
+        this.fetchUserRole();
     }
 }
 </script>

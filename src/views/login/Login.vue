@@ -1,19 +1,27 @@
 <template>
-  <div class="views_login">
-    <div class="box">
-      <h1>Login</h1>
-      <form @submit.prevent="submit">
-        <input type="text" v-model="email" placeholder="Enter your username">
-        <input type="password" v-model="password" placeholder="Enter your password">
-        <button class="white" @click="reset">Reset</button>
-        <button class="blue">Login</button>
-      </form>
+  <div class="login_box">
+    <div class="two_view">
+      <div class="left"></div>
+      <div class="right">
+        <div class="form_container">
+          <span class="logo">
+            <img src="../../assets/img/tokox_logo.png" alt="tokox_logo">
+          </span>
+          <form @submit.prevent="submit">
+            <input type="text" v-model="email" placeholder="Masukkan Email">
+            <input type="password" v-model="password" placeholder="Masukkan password">
+            <div class="btn_group">
+              <button class="btn_primary">Masuk</button>
+              <button class="btn_secondary"@click="routeToRegisterPage">Daftar</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { BButton } from "bootstrap-vue-next";
 import cookie from "js-cookie";
   export default{
     name: 'Login',
@@ -29,12 +37,45 @@ import cookie from "js-cookie";
         this.password = "";
       },
       submit(){
+        if(!this.email || !this.password){
+          this.$Swal.fire({
+            title: "Isi Semua Form!",
+          });
+          return;
+        }
+
+        if(this.password.length < 4){
+        this.$Swal.fire({
+            title: "Password minimal 4 karakter!",
+        });
+        return;
+      }
+
+      if(!this.email.includes("@") || !this.email.includes(".")){
+        this.$Swal.fire({
+            title: "Email salah!",
+        });
+        return;
+      }
+
         this.$axios.post("auth/login", {
            email: this.email,
            password: this.password
         }).then(response => {
           // console.log(response)
           this.getDataUser(response.data)
+        }).catch(error => {
+          if(error.response.data.message){
+            this.$Swal.fire({
+              icon: "error",
+              title: error.response.data.message,
+            });
+          }else{
+            this.$Swal.fire({
+              icon: "error",
+              title: "Terjadi kesalahan!",
+            });
+          }
         })
       },
       getDataUser(data){
@@ -49,9 +90,15 @@ import cookie from "js-cookie";
           cookie.set("userdata", forcookie, {expires: 1});
           // 1 = 1 jam
           this.$store.commit('SET_LOGIN', forcookie)
-          alert('Anda telah berhasil Login!');
+          this.$Swal.fire({
+            title: "Login Berhasil!",
+            icon: "success"
+          });
           this.$router.push({path: '/product'})
         })
+      },
+      routeToRegisterPage(){
+        this.$router.push({ name: 'register' });
       }
     }
   }

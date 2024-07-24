@@ -1,21 +1,20 @@
 <template>
-  <div>
-    <h1 class="text-center white">Categories</h1>
-    <b-row class="mb-3 align-items-center">
-      <b-col cols="12" md="4" class="mb-md-0">
-        <b-button variant="primary" @click="addCategory">Add Category</b-button>
-      </b-col>
-      <b-col cols="12" md="8" class="mb-md-0 d-flex align-items-center justify-content-end">
-        <b-form-input v-model="tempSearchQuery" placeholder="Search categories..." class="mr-2"></b-form-input>
-        <b-button variant="secondary" @click="performSearch" class="ml-2">OK</b-button>
+  <div class="container">
+    <button class="btn_primary btn-wide" @click="addCategory">Tambah Kategori</button>
+    <div class="bar_container">
+      <div class="search">
+        <input type="text" v-model="tempSearchQuery">
+        <button class="btn_search" @click="performSearch">Cari</button>
+      </div>
+      <div class="filter">
         <b-form-select v-model="selectedName" class="ml-2">
           <option value="">All</option>
           <option v-for="name in uniqueNames" :key="name" :value="name">{{ name }}</option>
         </b-form-select>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
 
-    <b-card>
+    <b-card class="mt-2">
       <b-table
         :items="paginatedCategories"
         :fields="tableFields"
@@ -124,13 +123,22 @@ export default {
       this.$router.push({ name: 'editCategory', params: { id } });
     },
     deleteCategory(id) {
-      if (confirm('Are you sure you want to delete this category?')) {
-        this.$axios.delete(`categories/${id}`).then(() => {
-          this.getListCategories(); // Refresh the list after deletion
-        }).catch((error) => {
-          console.error('Error deleting category:', error);
-        });
-      }
+      this.$Swal.fire({
+                title: "Apakah Anda yakin?",
+                showDenyButton: true,
+                confirmButtonText: "Tidak",
+                denyButtonText: `Ya`
+            }).then((result) => {
+                if (result.isDenied) {
+                    this.$axios.delete(`categories/${id}`).then(()=>{
+                        this.$Swal.fire({
+                            title: "Kategori Dihapus!",
+                        }).then(
+                          window.location.reload()
+                        )
+                    })
+                }
+            });  
     }
   },
   mounted() {

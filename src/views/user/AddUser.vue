@@ -1,56 +1,43 @@
 <template>
   <div>
-    <h1>Add User Data</h1>
-    <b-form @submit.prevent="addData">
-      <b-form-group label="Email" label-for="email-input">
-        <b-form-input
-          id="email-input"
-          type="email"
-          v-model="email"
-          placeholder="Insert new email"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Name" label-for="name-input">
-        <b-form-input
-          id="name-input"
-          type="text"
-          v-model="name"
-          placeholder="Insert new name"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Password" label-for="password-input">
-        <b-form-input
-          id="password-input"
-          type="password"
-          v-model="password"
-          placeholder="Insert new password"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Role" label-for="role-select">
-        <b-form-select id="role-select" v-model="role" required>
-          <option value="">Select role</option>
-          <option value="customer">Customer</option>
-          <option value="admin">Admin</option>
-        </b-form-select>
-      </b-form-group>
-
-      <b-form-group label="Avatar" label-for="avatar-input">
-        <b-form-input
-          id="avatar-input"
-          type="text"
-          v-model="avatar"
-          placeholder="Insert new avatar link"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-button type="submit" variant="primary">Add user</b-button>
-    </b-form>
+    <div class="container">
+      <div class="single_add_container">
+        <div class="title">
+          <h1 class="text-center white">Tambah User</h1>
+        </div>
+        <div class="body">
+          <form>
+            <div class="input">
+              <span>Email</span>
+              <b-form-input v-model="email" class="in"></b-form-input>
+            </div>
+            <div class="input">
+              <span>Nama</span>
+              <b-form-input v-model="name" class="in"></b-form-input>
+            </div>
+            <div class="input">
+              <span>Password</span>
+              <b-form-input v-model="password" type="password" class="in"></b-form-input>
+            </div>
+            <div class="input">
+              <span>Role</span>
+              <b-form-select v-model="role" class="in mb-3">
+                  <b-form-select-option value="customer">Customer</b-form-select-option>
+                  <b-form-select-option value="admin">Admin</b-form-select-option>
+              </b-form-select>
+            </div>
+            <div class="input">
+              <span>Avatar</span>
+              <b-form-input  @change="listenFile" type="file" class="in"></b-form-input>
+            </div>
+            <div class="btn_group">
+                <button class="btn_primary btn-wide" @click="addData">Tambah User</button>
+                <button class="btn_secondary btn-wide" @click="routeToPageHome">Kembali</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -63,29 +50,77 @@ export default {
       password: "",
       role: "",
       avatar: "",
+      file: null,
     };
   },
   methods: {
+    listenFile(event) {
+      this.file = event.target.files;
+      console.log("Selected file:", this.file[0]);
+    },
     addData() {
+
+      if(this.password.length < 4){
+        this.$Swal.fire({
+            title: "Password minimal 4 karakter!",
+        });
+        return;
+      }
+
+      if(!this.email.includes("@") || !this.email.includes(".")){
+        this.$Swal.fire({
+            title: "Email salah!",
+        });
+        return;
+      }
+
+      let formData = new FormData();
+      formData.append("file", this.file[0]);
+      console.log("FormData for file upload:", formData);
+
       this.$axios
-        .post("users", {
-          email: this.email,
-          name: this.name,
-          password: this.password,
-          role: this.role,
-          avatar:
-            this.avatar ||
-            "https://akornas.ac.id/wp-content/uploads/2021/12/placeholder.jpg",
+        .post("files/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         })
         .then((res) => {
-          console.log("Add user success", res);
-          alert("Add user success.");
+          console.log("File upload response:", res.data.location);
+          let image = res.data.location;
+          let userPayload = {
+            email: this.email,
+            name: this.name,
+            password: this.password,
+            role: this.role,
+            avatar: image,
+          };
+          console.log("User payload:", userPayload);
+
+          return this.$axios.post("users", userPayload);
+        })
+        .then((res) => {
+          this.$Swal.fire({
+              title: "User Ditambah!",
+              icon: "success"
+          });
           this.$router.push("/user");
         })
-        .catch((error) => {
-          console.error("Error add user:", error);
-          alert("Failed to add user. Please try again.");
-        });
+        .catch(error=>{
+          if(error.response.data.message){
+              this.$Swal.fire({
+              icon: "error",
+              title: error.response.data.message,
+              });
+          }else{
+              this.$Swal.fire({
+              icon: "error",
+              title: "Terjadi kesalahan!",
+              });
+          }
+      })
+    },
+    routeToPageHome(){
+      this.$router.push('/user');
     },
   },
 };

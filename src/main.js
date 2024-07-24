@@ -9,6 +9,7 @@ import axios from 'axios'
 import { createBootstrap } from "bootstrap-vue-next";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
+import Swal from 'sweetalert2'
 
 const axiosinstance = axios.create({
     baseURL: 'https://api.escuelajs.co/api/v1/',
@@ -26,7 +27,6 @@ if(cookie.getJSON('userdata') !== undefined){
         
         config.headers['Authorization'] = `Bearer ${auth.access_token}`;
         
-     
       return config;
     },
     (error) => Promise.reject(error)
@@ -38,4 +38,5 @@ app.use(store)
 app.use(router)
 app.use(createBootstrap({ components: true, directives: true }))
 app.config.globalProperties.$axios = {...axiosinstance}
+app.config.globalProperties.$Swal = Swal
 app.mount('#app')
