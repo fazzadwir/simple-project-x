@@ -1,44 +1,42 @@
 <template>
-  <div class="d-flex justify-content-center align-items-center vw-100 vh-100">
-    <b-container v-if="user">
-      <b-row class="justify-content-center">
-        <b-col md="6" class="text-center">
-          <h3>{{ user.name }}</h3>
-          <b-img rounded="circle" :src="user.avatar" fluid alt="Fluid image" />
-          <b-form-group
-            class="justify-content-center"
-            label="Change profile picture"
-            label-for="avatar-input"
-          >
-            <b-form-input
+  <div class="container">
+    <div v-if="user" class="single_add_container">
+      <div class="title">
+        <h3 class="text-center">{{ user.name }}</h3>
+      </div>
+      <div class="body">
+        <div class="image">
+          <img :src="user.avatar" alt="profil picture">
+        </div>
+
+        <div class="input">
+          <span>Ubah Foto</span>
+          <b-form-input
               class="center"
               id="avatar-input"
               @change="listenFile"
               type="file"
             ></b-form-input>
-          </b-form-group>
-          <b-row>
-            <b-button
-              v-if="showUploadButton"
-              @click="editPicture"
-              variant="primary"
-              block
-              >Upload</b-button
-            >
-            <b-button
-              class="mt-2 mb-2"
-              @click="editProfile(user.id)"
-              variant="success"
-              block
-              >Edit user information</b-button
-            >
-            <b-button @click="goHome" variant="secondary" block
-              >Back to home</b-button
-            >
-          </b-row>
-        </b-col>
-      </b-row>
-    </b-container>
+        </div>
+      </div>
+
+      <div class="btn_group">
+        <button 
+          v-if="showUploadButton"
+          class="btn_primary btn-wide mt-4"
+          @click="editPicture"
+        >
+          Ubah Foto Profil
+        </button>
+        <button 
+          class="btn_primary btn-wide mt-2 mb-2"
+          @click="editProfile(user.id)"
+        >
+          Ubah detail user
+        </button>
+        <button class="btn_secondary btn-wide" @click="goHome">Kembali</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -83,34 +81,42 @@ export default {
           },
         })
         .then((uploadResponse) => {
-          alert("File added!");
           console.log("File upload response:", uploadResponse.data.location);
           let image = uploadResponse.data.location;
           let userPayload = {
             avatar: image,
           };
           console.log("User payload:", userPayload);
-          return this.$axios.put("/users/" + this.user.id, userPayload);
+          this.$axios.put("/users/" + this.user.id, userPayload)
+          .then((updateResponse) => {
+            this.$Swal.fire({
+                title: "Profil Diubah!",
+                icon: "success"
+            })
+            let updatedUser = {
+              ...this.user,
+              avatar: updateResponse.data.avatar,
+            };
+            console.log('update user', updatedUser)
+            cookie.set("userdata", JSON.stringify(updatedUser));
+            this.$router.push("/profile").then(() => {
+              window.location.reload();
+            });
         })
-        .then((updateResponse) => {
-          alert("Profile updated successfully!");
-          let updatedUser = {
-            ...this.user,
-            avatar: updateResponse.data.avatar,
-          };
-          console.log('update user', updatedUser)
-          cookie.set("userdata", JSON.stringify(updatedUser));
-          this.$router.push("/profile").then(() => {
-            window.location.reload();
-          });
+        .catch(error=>{
+            if(error.response.data.message){
+                this.$Swal.fire({
+                icon: "error",
+                title: error.response.data.message,
+                });
+            }else{
+                this.$Swal.fire({
+                icon: "error",
+                title: "Terjadi kesalahan!",
+                });
+            }
+          })
         })
-        .catch((error) => {
-          console.error(
-            "Error updating profile:",
-            error.response || error.message
-          );
-          alert("Failed to update profile. Please try again.");
-        });
     },
     editProfile(id) {
       console.log("Navigating to editProfile with ID:", id);

@@ -2,13 +2,13 @@
   <div class="container">
     <div class="single_add_container">
       <div class="title">
-        <h1 class="text-center white">Tambah Produk</h1>
+        <h1 class="text-center white">Tambah Kategori</h1>
       </div>
       <div class="body">
         <form>
           <div class="input">
             <span>Nama Kategori</span>
-            <b-form-input v-model="name" required class="in"></b-form-input>
+            <b-form-input v-model="name" class="in"></b-form-input>
           </div>
           <div class="input">
             <span>Gambar</span>
@@ -41,6 +41,14 @@ export default {
       this.file = event.target.files;
     },
     addCategory() {
+
+      if(!this.name || !this.file){
+        this.$Swal.fire({
+              title: "Isi Semua Form!",
+          });
+          return;
+      }
+
       let formData = new FormData();
       formData.append("file", this.file[0]);
 
@@ -63,9 +71,19 @@ export default {
           });
           this.$router.push({ name: "listCategory" });
         })
-        .catch((error) => {
-          console.error("Error adding category:", error);
-        });
+        .catch(error=>{
+            if(error.response.data.message){
+                this.$Swal.fire({
+                icon: "error",
+                title: error.response.data.message,
+                });
+            }else{
+                this.$Swal.fire({
+                icon: "error",
+                title: "Terjadi kesalahan!",
+                });
+            }
+        })
     }
   }
 };

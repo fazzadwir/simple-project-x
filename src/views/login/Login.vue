@@ -37,12 +37,45 @@ import cookie from "js-cookie";
         this.password = "";
       },
       submit(){
+        if(!this.email || !this.password){
+          this.$Swal.fire({
+            title: "Isi Semua Form!",
+          });
+          return;
+        }
+
+        if(this.password.length < 4){
+        this.$Swal.fire({
+            title: "Password minimal 4 karakter!",
+        });
+        return;
+      }
+
+      if(!this.email.includes("@") || !this.email.includes(".")){
+        this.$Swal.fire({
+            title: "Email salah!",
+        });
+        return;
+      }
+
         this.$axios.post("auth/login", {
            email: this.email,
            password: this.password
         }).then(response => {
           // console.log(response)
           this.getDataUser(response.data)
+        }).catch(error => {
+          if(error.response.data.message){
+            this.$Swal.fire({
+              icon: "error",
+              title: error.response.data.message,
+            });
+          }else{
+            this.$Swal.fire({
+              icon: "error",
+              title: "Terjadi kesalahan!",
+            });
+          }
         })
       },
       getDataUser(data){

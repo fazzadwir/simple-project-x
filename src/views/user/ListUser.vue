@@ -130,7 +130,10 @@ export default {
       this.$axios.delete("users/" + id).then((res) => {
         if (res) {
           this.getListUser();
-          alert("Delete success");
+          this.$Swal.fire({
+              title: "Data Dihapuss!",
+              icon: "success"
+          });
         }
       });
     },

@@ -8,7 +8,9 @@
             </div>
             <div class="right">
                     <div class="title">
-                        <h1 class="text-center white">Edit Produk</h1>
+                        
+                        <h1 v-if="userRole !== 'customer'" class="text-center white">Edit Produk</h1>
+                        <h1 v-if="userRole === 'customer'" class="text-center white">Detail Produk</h1>
                     <div class="body">
                         <form>
                             <div class="input">
@@ -29,14 +31,14 @@
                                 <span>Harga</span>
                                 <b-form-input type="number" v-model="price" class="in"></b-form-input>
                             </div>
-                            <div class="input">
+                            <div class="input" v-if="userRole !== 'customer'">
                                 <span>Ubah Gambar</span>
                                 <b-form-file @change="listenFile" class="in" accept="image/*"></b-form-file>
                             </div>
 
                             <div class="btn_group">
-                                <button class="btn_primary btn-wide" @click="editData">Ubah Produk</button>
-                                <button class="btn_delete btn-wide" @click="deleteItem">Hapus Produk</button>
+                                <button v-if="userRole !== 'customer'" class="btn_primary btn-wide" @click="editData">Ubah Produk</button>
+                                <button v-if="userRole !== 'customer'" class="btn_delete btn-wide" @click="deleteItem">Hapus Produk</button>
                                 <button class="btn_secondary btn-wide" @click="routeToPageHome">Kembali</button>
                             </div>
                         </form>
@@ -51,6 +53,7 @@
 </template>
 
 <script>
+import cookie from "js-cookie";
 
 export default{
     name: 'Edit',
@@ -67,7 +70,8 @@ export default{
             category: "",
             images: "",
 
-            file: null
+            file: null,
+            userRole: "",
         }
     },
     methods: {
@@ -107,6 +111,14 @@ export default{
             this.$router.push('/product');
         },
         editData(){
+
+            if(!this.title || !this.category || !this.description || !this.price){
+                this.$Swal.fire({
+                    title: "Isi Semua Form!",
+                });
+                return;
+            }
+
             let image = null;
 
             if(this.file !== null){
@@ -118,7 +130,6 @@ export default{
                     'Content-Type': 'multipart/form-data'
                 }
                 }).then((response) =>{
-                    alert('FIle ditambah!')
                     console.log('response', response.data.location)
                     image = response.data.location;
 
@@ -154,9 +165,24 @@ export default{
                 categoryId: this.category,
                 images: image?[image]:[this.images]
                 }).then(() =>{
-                        alert('Data diubah!')
-                        this.$router.push({path: '/product'})
-                    }) 
+                    this.$Swal.fire({
+                        title: "Data Diubah!",
+                        icon: "success"
+                    });
+                    this.$router.push({path: '/product'})
+                }).catch(error=>{
+                    if(error.response.data.message){
+                        this.$Swal.fire({
+                        icon: "error",
+                        title: error.response.data.message,
+                        });
+                    }else{
+                        this.$Swal.fire({
+                        icon: "error",
+                        title: "Terjadi kesalahan!",
+                        });
+                    }
+                })
         },
         deleteItem(){
             this.$Swal.fire({
@@ -176,10 +202,21 @@ export default{
                 }
             });
         },
+        fetchUserRole() {
+        const userdata = cookie.getJSON("userdata");
+            if (userdata && userdata.role) {
+                this.userRole = userdata.role.toLowerCase();
+            } else {
+                console.error("User role is not available in the cookie");
+            }
+        },
     },
     mounted(){
         this.getMainId();
         this.getListDataCategory();
+    },
+    created(){
+        this.fetchUserRole();
     }
 }
 

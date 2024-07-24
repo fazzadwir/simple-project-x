@@ -1,61 +1,64 @@
 <template>
-  <div class="m-5">
-    <h1>Edit profile</h1>
-    <b-form @submit.prevent="putData">
-      <b-form-group label="Email" label-for="email-input">
-        <b-form-input
-          id="email-input"
-          type="email"
-          v-model="email"
-          placeholder="Insert new email"
-          required
-        ></b-form-input>
-      </b-form-group>
+  <div class="container">
+    <div class="single_add_container">
+      <div class="title">
+        <h1 class="text-center white">Edit Profil</h1>
+      </div>
+      <div class="body">
+        <b-form @submit.prevent="putData">
+          <div class="input">
+            <span>Email</span>
+            <b-form-input
+              id="email-input"
+              type="email"
+              v-model="email"
+            ></b-form-input>
+          </div>
+ 
+          <div class="input">
+            <span>Nama</span>
+            <b-form-input
+              id="name-input"
+              type="text"
+              v-model="name"
+            ></b-form-input>
+          </div>
 
-      <b-form-group label="Name" label-for="name-input">
-        <b-form-input
-          id="name-input"
-          type="text"
-          v-model="name"
-          placeholder="Insert new name"
-          required
-        ></b-form-input>
-      </b-form-group>
+          <div class="input">
+            <span>Password</span>
+            <b-form-input
+              id="password-input"
+              type="password"
+              v-model="password"
+            ></b-form-input>
+          </div>
+          
+          <div class="input" v-if="userRole !== 'customer'">
+            <span>Role</span>
+            <b-form-select id="role-select" v-model="role">
+              <option value="">Select role</option>
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+            </b-form-select>
+          </div>
 
-      <b-form-group label="Password" label-for="password-input">
-        <b-form-input
-          id="password-input"
-          type="password"
-          v-model="password"
-          placeholder="Insert new password"
-        ></b-form-input>
-      </b-form-group>
+          <div class="input">
+            <span>Ubah Gambar</span>
+            <b-form-input
+              class="center"
+              id="avatar-input"
+              @change="listenFile"
+              type="file"
+            ></b-form-input>
+          </div>
 
-      <b-form-group label="Role" label-for="role-select">
-        <b-form-select id="role-select" v-model="role" required>
-          <option value="">Select role</option>
-          <option value="customer">Customer</option>
-          <option value="admin">Admin</option>
-        </b-form-select>
-      </b-form-group>
-
-      <b-form-group
-        class="justify-content-center"
-        label="Change profile picture"
-        label-for="avatar-input"
-      >
-        <b-form-input
-          class="center"
-          id="avatar-input"
-          @change="listenFile"
-          type="file"
-        ></b-form-input>
-      </b-form-group>
-      <b-row class="mt-3">
-        <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button @click="goProfile" variant="secondary">Back</b-button>
-      </b-row>
-    </b-form>
+          <div class="btn_group">
+            <button class="btn_primary btn-wide" type="submit">Simpan</button>
+            <button class="btn_secondary btn-wide" @click="goProfile">Kembali</button>
+          </div>
+        </b-form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -72,6 +75,7 @@ export default {
       avatar: "",
       file: null,
       user: null,
+      userRole: "",
     };
   },
   methods: {
@@ -91,7 +95,6 @@ export default {
             },
           })
           .then((uploadResponse) => {
-            alert("File added!");
             console.log("File upload response:", uploadResponse.data.location);
             this.updateUser(uploadResponse.data.location);
           })
@@ -107,6 +110,28 @@ export default {
       }
     },
     updateUser(image) {
+      if(!this.email || !this.name || !this.password || !this.role){
+        this.$Swal.fire({
+              title: "Isi Semua Form!",
+          });
+          return;
+      }
+
+      if(this.password.length < 4){
+        this.$Swal.fire({
+            title: "Password minimal 4 karakter!",
+        });
+        return;
+      }
+
+      if(!this.email.includes("@") || !this.email.includes(".")){
+        this.$Swal.fire({
+            title: "Email salah!",
+        });
+        return;
+      }
+
+      
       let tempUserData = cookie.getJSON('userdata')
       let userPayload = {
         email: this.email,
@@ -120,8 +145,11 @@ export default {
       console.log("User payload:", userPayload);
       this.$axios
         .put("/users/" + this.$route.query.id, userPayload)
-        .then((updateResponse) => {
-          alert("Profile updated successfully!");
+        .then(() => {
+          this.$Swal.fire({
+              title: "Profil Diubah!",
+              icon: "success"
+          });
           let updatedUser = {
             ...this.user,
             ...userPayload,
@@ -129,13 +157,19 @@ export default {
           cookie.set("userdata", JSON.stringify(updatedUser));
           this.$router.push("/profile");
         })
-        .catch((error) => {
-          console.error(
-            "Error updating profile:",
-            error.response || error.message
-          );
-          alert("Failed to update profile. Please try again.");
-        });
+        .catch(error=>{
+            if(error.response.data.message){
+                this.$Swal.fire({
+                icon: "error",
+                title: error.response.data.message,
+                });
+            }else{
+                this.$Swal.fire({
+                icon: "error",
+                title: "Terjadi kesalahan!",
+                });
+            }
+          })
     },
     loadUserData() {
       console.log("Loading user data for ID:", this.$route.query.id);
@@ -148,6 +182,7 @@ export default {
           this.name = user.name;
           this.role = user.role;
           this.avatar = user.avatar;
+          this.password = user.password
           console.log("Loaded user data:", user);
         })
         .catch((error) => {
@@ -158,9 +193,20 @@ export default {
     goProfile() {
       this.$router.push("/profile");
     },
+    fetchUserRole() {
+        const userdata = cookie.getJSON("userdata");
+            if (userdata && userdata.role) {
+                this.userRole = userdata.role.toLowerCase();
+            } else {
+                console.error("User role is not available in the cookie");
+            }
+        },
   },
   mounted() {
     this.loadUserData();
   },
+  created(){
+        this.fetchUserRole();
+    }
 };
 </script>

@@ -63,6 +63,14 @@ export default {
       this.$router.push({ name: "listCategory" });
     },
     editCategory() {
+
+      if(!this.name){
+        this.$Swal.fire({
+              title: "Isi Semua Form!",
+          });
+          return;
+      }
+
       if (this.file) {
         const formData = new FormData();
         formData.append('file', this.file);
@@ -93,9 +101,19 @@ export default {
           });
           this.$router.push({ name: "listCategory" });
         })
-        .catch((error) => {
-          console.error("Error updating category:", error);
-        });
+        .catch(error=>{
+          if(error.response.data.message){
+              this.$Swal.fire({
+              icon: "error",
+              title: error.response.data.message,
+              });
+          }else{
+              this.$Swal.fire({
+              icon: "error",
+              title: "Terjadi kesalahan!",
+              });
+          }
+      })
     },
   },
 };

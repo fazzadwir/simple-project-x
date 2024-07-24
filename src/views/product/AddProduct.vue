@@ -68,7 +68,12 @@ export default{
         },
         addData(){
 
-            console.log('tes', this.file[0])
+            if(!this.title || !this.category || !this.description || !this.price || !this.file){
+                this.$Swal.fire({
+                    title: "Isi Semua Form!",
+                });
+                return;
+            }
 
             let formData = new FormData();
                 formData.append("file", this.file[0]);
@@ -97,10 +102,19 @@ export default{
                         });
                         this.$router.push({path: '/product'})
                     })
-
-
+                }).catch(error=>{
+                    if(error.response.data.message){
+                        this.$Swal.fire({
+                        icon: "error",
+                        title: error.response.data.message,
+                        });
+                    }else{
+                        this.$Swal.fire({
+                        icon: "error",
+                        title: "Terjadi kesalahan!",
+                        });
+                    }
                 })
-            
         },
         getListDataCategory(){
             this.$axios.get('categories')

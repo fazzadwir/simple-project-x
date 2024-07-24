@@ -9,7 +9,7 @@
           <form>
             <div class="input">
               <span>Email</span>
-              <b-form-input v-model="email" class="in" type="email"></b-form-input>
+              <b-form-input v-model="email" class="in"></b-form-input>
             </div>
             <div class="input">
               <span>Nama</span>
@@ -59,6 +59,21 @@ export default {
       console.log("Selected file:", this.file[0]);
     },
     addData() {
+
+      if(this.password.length < 4){
+        this.$Swal.fire({
+            title: "Password minimal 4 karakter!",
+        });
+        return;
+      }
+
+      if(!this.email.includes("@") || !this.email.includes(".")){
+        this.$Swal.fire({
+            title: "Email salah!",
+        });
+        return;
+      }
+
       let formData = new FormData();
       formData.append("file", this.file[0]);
       console.log("FormData for file upload:", formData);
@@ -84,13 +99,25 @@ export default {
           return this.$axios.post("users", userPayload);
         })
         .then((res) => {
-          alert("Add user success!");
+          this.$Swal.fire({
+              title: "User Ditambah!",
+              icon: "success"
+          });
           this.$router.push("/user");
         })
-        .catch((error) => {
-          console.error("Error adding user:", error.response || error.message);
-          alert("Failed to add user. Please try again.");
-        });
+        .catch(error=>{
+          if(error.response.data.message){
+              this.$Swal.fire({
+              icon: "error",
+              title: error.response.data.message,
+              });
+          }else{
+              this.$Swal.fire({
+              icon: "error",
+              title: "Terjadi kesalahan!",
+              });
+          }
+      })
     },
     routeToPageHome(){
       this.$router.push('/user');

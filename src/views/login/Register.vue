@@ -41,8 +41,31 @@ export default {
   methods: {
     registerAction() {
 
+      if(!this.name || !this.email || !this.password){
+        this.$Swal.fire({
+            title: "Isi Semua Form!",
+          });
+          return;
+      }
+
       if(this.password !== this.confirmPassword){
-        alert("Password Anda tidak sama dengan konfirmasi password Anda!");
+          this.$Swal.fire({
+            title: "Konfirmasi Password Salah!",
+          });
+        return;
+      }
+
+      if(this.password.length < 4){
+        this.$Swal.fire({
+            title: "Password minimal 4 karakter!",
+        });
+        return;
+      }
+
+      if(!this.email.includes("@") || !this.email.includes(".")){
+        this.$Swal.fire({
+            title: "Email salah!",
+        });
         return;
       }
 
@@ -62,13 +85,19 @@ export default {
             icon: "success"
           });
           this.$router.push({path:'/'});
-        })
-        .catch((error) => {
+        }).catch((error) => {
           this.isSubmitting = false;
-          if (error.response.data.errors != undefined) {
-            alert("Terjadi Kesalahan!")
+          if(error.response.data.message){
+            this.$Swal.fire({
+              icon: "error",
+              title: error.response.data.message,
+            });
+          }else{
+            this.$Swal.fire({
+              icon: "error",
+              title: "Terjadi kesalahan!",
+            });
           }
-          return error;
         });
     },
     routeToLoginPage(){

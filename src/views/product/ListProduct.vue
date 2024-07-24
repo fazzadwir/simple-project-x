@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-            <button class="btn_primary btn-wide" @click="routeAddProduct">Tambah Produk</button>
+            <button v-if="userRole !== 'customer'" class="btn_primary btn-wide" @click="routeAddProduct">Tambah Produk</button>
             <div class="bar_container">
                 <div class="search">
                     <input type="text" v-model="search_value">
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import cookie from "js-cookie";
 
 export default{
     name: 'addProduct',
@@ -46,7 +47,8 @@ export default{
             input: "",
             search_value: "",
             temp: [],
-            sort: ""
+            sort: "",
+            userRole: "",
         }
     },
     methods: {
@@ -102,8 +104,10 @@ export default{
         deleteItem(id){
             if(confirm("yakin?")){
                 this.$axios.delete('products/' + id).then(()=>{
-                    alert("Data Berhasil dihapus!")
-                    window.location.reload();
+                    this.$Swal.fire({
+                        title: "Produk Ditambah!",
+                        icon: "success"
+                    }).then(window.location.reload())
                 })
             }
         },
@@ -138,12 +142,23 @@ export default{
                     this.dataProductList = [...this.temp].sort((a, b) => a.price - b.price)
                     break;
             }
-        }
+        },
+        fetchUserRole() {
+        const userdata = cookie.getJSON("userdata");
+            if (userdata && userdata.role) {
+                this.userRole = userdata.role.toLowerCase();
+            } else {
+                console.error("User role is not available in the cookie");
+            }
+        },
 
     },
     mounted() {
         this.getListDataProduct();
         this.temp = this.dataProductList;
+    },
+    created(){
+        this.fetchUserRole();
     }
 }
 </script>
